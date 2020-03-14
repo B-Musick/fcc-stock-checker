@@ -32,24 +32,25 @@ app.use(helmet.contentSecurityPolicy({
 }))
 
 /********************** DATABASE ************************/
-mongoose.connect('mongodb://localhost:27017/fcc_stock_price', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost:27017/fcc_stock_price', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // CONNECT TO MONGODB ATLAS DATABASE - pass URI key to connect
-// mongoose.connect(process.env.DATABASE, {
-//   userNewUrlParser: true,
-//   useCreateIndex: true
-// }).then(() => {
-//   console.log("Connected to DB!");
-// }).catch(err => {
-//   console.log("Error: ", err.message);
-// });
+mongoose.connect(process.env.DATABASE, {
+  userNewUrlParser: true,
+  useCreateIndex: true
+}).then(async () => {
+  console.log("Connected to DB!");
+  await Stock.collection.drop();
+}).catch(err => {
+  console.log("Error: ", err.message);
+});
 //Index page (static HTML)
 
 app.route('/')
   .get(function (req, res) {
-    Stock.create({stock:'GOOG',price:300,likes:200},(err,newStock)=>{
+    
       res.sendFile(process.cwd() + '/views/index.html');
-    })
+   
   });
 
 //For FCC testing purposes

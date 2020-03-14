@@ -63,6 +63,7 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock:'GOOG',like: true})
         .end(function(err, res){
+
           assert.equal(res.status, 200);
           assert.property(res.body,'stockData','Stock is a key');
           assert.property(res.body['stockData'],'stock','stock is a key');
@@ -80,6 +81,8 @@ suite('Functional Tests', function() {
           .query({stock:'GOOG',like: true})
           .end(function(err, res){
             assert.equal(res.status, 200);
+            console.log(res.body['stockData'].likes + ' test like')
+
             assert.property(res.body,'stockData','Stock is a key');
             assert.property(res.body['stockData'],'stock','stock is a key');
             assert.property(res.body['stockData'],'likes','likes is a key');
