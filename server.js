@@ -12,18 +12,27 @@ var runner            = require('./test-runner');
 // Packages added
 let dotenv = require('dotenv');
 let mongoose = require('mongoose');
+let helmet = require('helmet');
 
 var app = express();
-
+let Stock = require('./models/Stock');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+dotenv.config();
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-dotenv.config();
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"]
+  }
+}))
+
 /********************** DATABASE ************************/
-mongoose.connect('mongodb://localhost:27017/fcc_project_library', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/fcc_stock_price', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // CONNECT TO MONGODB ATLAS DATABASE - pass URI key to connect
 // mongoose.connect(process.env.DATABASE, {
@@ -38,7 +47,9 @@ mongoose.connect('mongodb://localhost:27017/fcc_project_library', { useNewUrlPar
 
 app.route('/')
   .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
+    Stock.create({stock:'GOOG',price:300,likes:200},(err,newStock)=>{
+      res.sendFile(process.cwd() + '/views/index.html');
+    })
   });
 
 //For FCC testing purposes
@@ -48,11 +59,11 @@ fccTestingRoutes(app);
 apiRoutes(app);  
     
 //404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
-});
+// app.use(function(req, res, next) {
+//   res.status(404)
+//     .type('text')
+//     .send('Not Found');
+// });
 
 //Start our server and tests!
 app.listen(process.env.PORT || 3000, function () {
